@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
+import Section from './Section';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
-import Section from './Section';
+import Notification from './Notification';
 import styles from './Filter/Filter.module.css';
 
 export default class App extends Component {
   state = {
     contacts: [
-      { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
-      { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
-      { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
-      { id: nanoid(), name: 'Annie Copeland', number: '227-91-26' },
+      // { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
+      // { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
+      // { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
+      // { id: nanoid(), name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
   };
@@ -56,6 +57,21 @@ export default class App extends Component {
     }));
   };
 
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   render() {
     const { contacts, filter } = this.state;
     const visibleContacts = this.getVisibleContacts();
@@ -64,8 +80,8 @@ export default class App extends Component {
         style={{
           height: '100vh',
           display: 'flex',
-          justifyContent: 'space-evenly',
           alignItems: 'center',
+          justifyContent: 'space-evenly',
         }}
       >
         <Section title="Phonebook">
@@ -73,9 +89,15 @@ export default class App extends Component {
         </Section>
 
         <Section title="Contacts">
-          <div className={styles.filter}>All contacts: {contacts.length}</div>
-          <Filter value={filter} onChange={this.changeFilter} />
-          <ContactList contacts={visibleContacts} onDeleteContact={this.deleteContact} />
+          {contacts.length > 0 ? (
+            <>
+              <div className={styles.filter}>All contacts: {contacts.length}</div>
+              <Filter value={filter} onChange={this.changeFilter} />
+              <ContactList contacts={visibleContacts} onDeleteContact={this.deleteContact} />
+            </>
+          ) : (
+            <Notification message="There are no contacts yet. Let's create a new one!" />
+          )}
         </Section>
       </div>
     );
