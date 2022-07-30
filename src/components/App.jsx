@@ -78,8 +78,8 @@ export default class App extends Component {
     return (
       <div
         style={{
-          height: '100vh',
-          display: 'flex',
+          // height: '100vh',
+          // display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-evenly',
         }}
